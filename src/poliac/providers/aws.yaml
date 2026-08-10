@@ -1,0 +1,6 @@
+provider: aws
+resources:
+  aws_instance:
+    attributes:
+      instance_type: {type: enum, catalog: aws_instances.csv, key: instance_type}
+      root_block_device.volume_size: {type: integer, unit: GiB, min: 8}

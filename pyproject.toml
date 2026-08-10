@@ -1,0 +1,33 @@
+[project]
+name = "poliac"
+version = "0.1.0"
+description = "LLM-driven Terraform recommendations grounded in production metrics, delivered over LSP."
+requires-python = ">=3.11"
+dependencies = [
+    "pygls>=1.3",
+    "pydantic>=2",
+    "pyyaml>=6",
+    "tree-sitter>=0.23",
+    "tree-sitter-hcl>=1.1",
+    "python-dotenv>=1.0",
+]
+
+[project.scripts]
+poliac = "poliac.cli:main"
+
+[project.optional-dependencies]
+dev = ["pytest>=8"]
+gemini = ["google-genai>=1.0"]
+anthropic = ["anthropic>=0.40"]
+openai = ["openai>=1.40"]
+deepseek = ["openai>=1.40"]  # DeepSeek's API is OpenAI-compatible, same SDK
+
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]

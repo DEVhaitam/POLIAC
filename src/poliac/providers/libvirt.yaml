@@ -1,0 +1,6 @@
+provider: libvirt
+resources:
+  libvirt_domain:
+    attributes:
+      vcpu:   {type: integer, unit: cores, min: 1}
+      memory: {type: integer, unit: MiB,   min: 256}
