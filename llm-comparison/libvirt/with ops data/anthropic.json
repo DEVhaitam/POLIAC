@@ -1,0 +1,27 @@
+{
+  "recommendations": [
+    {
+      "resource_address": "libvirt_domain.vm",
+      "file": "main.tf",
+      "attribute": "vcpu",
+      "current_value": "2",
+      "recommended_value": "4",
+      "action": "increase",
+      "confidence": "high",
+      "rationale": "CPU utilization on the current 2-vcpu domain tracks almost exactly with the latency degradation described in the contract. At 200 users CPU is moderate (mean 50.662%, max 69.011%) and p95 latency is a modest 83.0ms. At 500 users CPU mean jumps to 89.068% with max 99.744% and p95 95.1%, and p95 latency jumps to 570.0ms (p99 to 4400.0ms). By 1000-2000 users CPU is essentially pinned at ~99-100% (mean 98.525%/99.231%, max 99.978%/99.978%, p95 99.933%/99.978%) while p95 latency explodes to 3800.0ms and 11000.0ms respectively. This is a classic CPU-saturation signature: the 2 vcpus are fully consumed under peak load, so requests queue for CPU time rather than completing quickly. Doubling to 4 vcpu directly targets this bottleneck by giving the workload more concurrent CPU capacity at peak, which should reduce queueing-driven latency. Note this is the primary lever available: memory shows no comparable saturation (see overall_assessment), so it is not implicated in the latency issue.",
+      "citations": [
+        {"row": 4, "column": "compute_cpu_pct_mean", "value": "50.662"},
+        {"row": 4, "column": "functions_p95_latency_ms", "value": "83.0"},
+        {"row": 5, "column": "compute_cpu_pct_mean", "value": "89.068"},
+        {"row": 5, "column": "compute_cpu_pct_max", "value": "99.744"},
+        {"row": 5, "column": "functions_p95_latency_ms", "value": "570.0"},
+        {"row": 6, "column": "compute_cpu_pct_mean", "value": "98.525"},
+        {"row": 6, "column": "compute_cpu_pct_max", "value": "99.978"},
+        {"row": 6, "column": "functions_p95_latency_ms", "value": "3800.0"},
+        {"row": 7, "column": "compute_cpu_pct_max", "value": "99.978"},
+        {"row": 7, "column": "functions_p95_latency_ms", "value": "11000.0"}
+      ]
+    }
+  ],
+  "overall_assessment": "The data supports a compute (vcpu) increase as the fix for the stated latency problem: CPU is essentially saturated (99-100%) exactly in the load range (500-2000 users) where the contract reports latency getting worse, and it is comparatively unsaturated (13-69%) below that range where latency stays low. Memory tells a different story and does not support any change: compute_ram_pct_mean/max stay in a narrow ~40-56% band across every row from 10 to 2000 users (e.g. row 0 mean 39.782%/max 49.447%, row 6 mean 48.859%/max 49.242%, row 7 mean 53.705%/max 56.206%), so the current 4096 MiB allocation is not a bottleneck and is not recommended for change. However, there is a genuine conflict between the two stated goals that should not be resolved silently: the contract asks to fix peak-load latency AND to avoid over-provisioning/wasted resources, but this Terraform resource has no autoscaling mechanism -- vcpu is a single static value. Sizing vcpu to satisfy peak load (500-2000 users, where CPU is pinned near 100%) means that during low load (10-200 users, where CPU mean is only 13-51%) the extra vcpu capacity will sit largely idle, which is itself a form of over-provisioning by the contract's own definition. The recommendation above prioritizes fixing the latency problem, since that is labeled the primary goal, but the user should be aware this trades against the 'no wasted resources' requirement given the static nature of this resource; if avoiding idle capacity at low load is the harder constraint, an autoscaling or load-based sizing mechanism (not expressible in the current libvirt_domain resource) would be needed instead of a fixed higher vcpu count."
+}

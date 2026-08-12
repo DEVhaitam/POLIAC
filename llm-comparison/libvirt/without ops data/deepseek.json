@@ -1,0 +1,27 @@
+{
+  "recommendations": [
+    {
+      "resource_address": "libvirt_domain.vm",
+      "file": "main.tf",
+      "attribute": "memory",
+      "current_value": "4096",
+      "recommended_value": "8192",
+      "action": "increase",
+      "confidence": "high",
+      "rationale": "Increasing memory to 8192 MiB reduces latency under peak load by providing more RAM for application caching and reducing swap overhead, while remaining efficient as it matches the typical doubling step without over-provisioning.",
+      "citations": []
+    },
+    {
+      "resource_address": "libvirt_domain.vm",
+      "file": "main.tf",
+      "attribute": "vcpu",
+      "current_value": "2",
+      "recommended_value": "4",
+      "action": "increase",
+      "confidence": "high",
+      "rationale": "Increasing vCPU to 4 cores improves parallel request handling under load, reducing latency spikes during peak user concurrency, and avoids over-provisioning by adding only what is needed for the reported 500-user threshold.",
+      "citations": []
+    }
+  ],
+  "overall_assessment": "Increase both memory and vCPU to 8192 MiB and 4 cores respectively to address latency under load. This provides balanced resource scaling without over-provisioning, based on the reported peak at 500 users."
+}

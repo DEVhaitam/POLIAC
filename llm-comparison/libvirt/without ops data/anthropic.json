@@ -1,0 +1,27 @@
+{
+  "recommendations": [
+    {
+      "resource_address": "libvirt_domain.vm",
+      "file": "main.tf",
+      "attribute": "vcpu",
+      "current_value": "2",
+      "recommended_value": "4",
+      "action": "increase",
+      "confidence": "medium",
+      "rationale": "Latency appears under peak load starting at 500 users, which is consistent with CPU contention rather than a resource-idle condition. Doubling vcpu from 2 to 4 gives the domain more scheduling headroom during load spikes while staying a modest, non-over-provisioned increase rather than a large jump.",
+      "citations": []
+    },
+    {
+      "resource_address": "libvirt_domain.vm",
+      "file": "main.tf",
+      "attribute": "memory",
+      "current_value": "4096",
+      "recommended_value": "8192",
+      "action": "increase",
+      "confidence": "low",
+      "rationale": "No memory utilization data was provided, so this is a conservative pairing with the vcpu increase to avoid creating a new memory bottleneck under peak load; doubling from 4096 MiB to 8192 MiB keeps the change proportional rather than over-provisioning. This should be validated against actual memory utilization metrics before applying.",
+      "citations": []
+    }
+  ],
+  "overall_assessment": "Only two tunable attributes were available in the inventory (vcpu, memory), both within the provider's allowed range with no stated upper bound. The recommendations propose modest increases aimed at relieving load-induced latency without over-provisioning, but confidence is limited since no runtime metrics (CPU/memory utilization, latency traces) were supplied to confirm which resource is the actual bottleneck. No other attributes (disk, network_interface, cpu mode) were present in the resource inventory or provider vocabulary, so no changes are proposed for them."
+}

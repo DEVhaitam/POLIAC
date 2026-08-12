@@ -1,0 +1,32 @@
+{
+  "recommendations": [
+    {
+      "resource_address": "libvirt_domain.vm",
+      "file": "main.tf",
+      "attribute": "vcpu",
+      "current_value": "2",
+      "recommended_value": "4",
+      "action": "increase",
+      "confidence": "high",
+      "rationale": "At load levels starting from 500 users, CPU utilization reaches compute_cpu_pct_mean of 89.068% and compute_cpu_pct_p95 of 95.1%, coinciding with latency degradation (functions_p95_latency_ms reaching 570.0 ms). Increasing vcpu will alleviate CPU saturation.",
+      "citations": [
+        {
+          "row": 5,
+          "column": "compute_cpu_pct_mean",
+          "value": "89.068"
+        },
+        {
+          "row": 5,
+          "column": "compute_cpu_pct_p95",
+          "value": "95.1"
+        },
+        {
+          "row": 5,
+          "column": "functions_p95_latency_ms",
+          "value": "570.0"
+        }
+      ]
+    }
+  ],
+  "overall_assessment": "The performance bottleneck at 500 users and above is driven by severe CPU contention, with CPU utilization reaching 89.068% mean and 95.1% p95 at row 5 (500 users), spiking latency to 570.0 ms. RAM usage remains moderate under peak load (compute_ram_pct_p95 at 48.44% for row 5), so memory adjustments are unnecessary. Increasing vcpu from 2 to 4 addresses the latency issue without over-provisioning memory."
+}

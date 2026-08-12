@@ -1,0 +1,37 @@
+{
+  "recommendations": [
+    {
+      "resource_address": "libvirt_domain.vm",
+      "file": "main.tf",
+      "attribute": "vcpu",
+      "current_value": "2",
+      "recommended_value": "4",
+      "action": "increase",
+      "confidence": "high",
+      "rationale": "Increase CPU capacity because peak-load latency rises sharply while CPU is near saturation: at 500 users, compute_cpu_pct_mean is 89.068 and functions_p95_latency_ms is 570.0; at 1000 users, compute_cpu_pct_mean is 98.525 and functions_p95_latency_ms is 3800.0. The metrics support adding CPU rather than memory, which remains well below saturation. This addresses the latency objective while avoiding an unnecessary memory increase.",
+      "citations": [
+        {
+          "row": 5,
+          "column": "compute_cpu_pct_mean",
+          "value": "89.068"
+        },
+        {
+          "row": 5,
+          "column": "functions_p95_latency_ms",
+          "value": "570.0"
+        },
+        {
+          "row": 6,
+          "column": "compute_cpu_pct_mean",
+          "value": "98.525"
+        },
+        {
+          "row": 6,
+          "column": "functions_p95_latency_ms",
+          "value": "3800.0"
+        }
+      ]
+    }
+  ],
+  "overall_assessment": "The metrics support a CPU-focused change to reduce peak-load latency: CPU reaches 89.068 mean utilization at 500 users and 98.525 at 1000 users, while p95 latency increases from 570.0 ms to 3800.0 ms. Memory does not show comparable pressure, with mean RAM utilization at 48.859% at 1000 users, so increasing memory would risk over-provisioning without metric support. The recommendation therefore increases vcpu from 2 to 4; the contract's requirement to solve latency without wasted resources is consistent with the observed CPU bottleneck, though the metrics cannot guarantee that 4 vCPUs alone will eliminate all latency at peak load."
+}

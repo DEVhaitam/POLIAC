@@ -1,0 +1,16 @@
+{
+  "recommendations": [
+    {
+      "resource_address": "libvirt_domain.vm",
+      "file": "main.tf",
+      "attribute": "vcpu",
+      "current_value": "2",
+      "recommended_value": "4",
+      "action": "increase",
+      "confidence": "medium",
+      "rationale": "Increase CPU capacity to address latency that rises under peak load starting at 500 users, while making a moderate rather than excessive change to avoid over-provisioning. The contract provides the performance requirement but no measured CPU saturation data, so confidence is medium.",
+      "citations": []
+    }
+  ],
+  "overall_assessment": "A modest increase from 2 to 4 vCPUs is the most targeted available change in the provided resource inventory for peak-load latency. No memory change is recommended because the contract provides no evidence that memory pressure is causing the latency."
+}

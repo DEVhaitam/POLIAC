@@ -1,0 +1,37 @@
+{
+  "recommendations": [
+    {
+      "resource_address": "libvirt_domain.vm",
+      "file": "main.tf",
+      "attribute": "vcpu",
+      "current_value": "2",
+      "recommended_value": "4",
+      "action": "increase",
+      "confidence": "high",
+      "rationale": "At 500 users (peak load onset), CPU max reaches 99.744% and p95 is 95.1% (row 5, 'compute_cpu_pct_max', 'compute_cpu_pct_p95'), indicating saturation. Latency p99 spikes to 4400 ms at 500 users and 79000 ms at 2000 users (row 5, row 7 'functions_p99_latency_ms'). Memory remains underutilized (max 48.47% at 500 users, 56.206% at 2000 users), so increasing memory would waste resources. Increasing vcpu from 2 to 4 directly addresses the CPU bottleneck without over-provisioning memory, aligning with the latency-reduction goal while staying resource-efficient.",
+      "citations": [
+        {
+          "row": 5,
+          "column": "compute_cpu_pct_max",
+          "value": "99.744"
+        },
+        {
+          "row": 5,
+          "column": "compute_cpu_pct_p95",
+          "value": "95.1"
+        },
+        {
+          "row": 5,
+          "column": "functions_p99_latency_ms",
+          "value": "4400.0"
+        },
+        {
+          "row": 5,
+          "column": "compute_ram_pct_max",
+          "value": "48.47"
+        }
+      ]
+    }
+  ],
+  "overall_assessment": "The metrics confirm CPU saturation starting at 500 users, directly correlating with latency spikes. Memory is not a bottleneck. Increasing vcpu to 4 is the only resource-efficient change that addresses the latency problem without wasting memory. The contract's 'do not over-provision' is satisfied because the increase targets the actual bottleneck, and memory is left unchanged."
+}

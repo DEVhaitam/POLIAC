@@ -1,0 +1,33 @@
+{
+  "recommendations": [
+    {
+      "resource_address": "libvirt_domain.vm",
+      "file": "main.tf",
+      "attribute": "vcpu",
+      "current_value": "2",
+      "recommended_value": "4",
+      "action": "increase",
+      "confidence": "high",
+      "rationale": "Increasing vCPU count helps handle increased request concurrency under peak load (500+ users), mitigating CPU-bound latency without excessive over-provisioning.",
+      "citations": [
+        {
+          "row": 4,
+          "column": "vcpu",
+          "value": "2"
+        }
+      ]
+    },
+    {
+      "resource_address": "libvirt_domain.vm",
+      "file": "main.tf",
+      "attribute": "memory",
+      "current_value": "4096",
+      "recommended_value": "8192",
+      "action": "increase",
+      "confidence": "high",
+      "rationale": "Doubling memory to 8192 MiB accommodates heavier application memory pressure during peak loads to prevent swapping and reduce latency.",
+      "citations": []
+    }
+  ],
+  "overall_assessment": "To address latency issues under peak load starting from 500 users while avoiding resource waste, moderately scaling up both vCPU and memory resources for the libvirt domain provides an optimal balance between performance and resource efficiency."
+}

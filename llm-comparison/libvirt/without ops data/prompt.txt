@@ -1,0 +1,240 @@
+You are advising on changes to the given Terraform, in light of the user's stated contract.
+
+- The contract is the user's stated intent.
+- Only recommend changes to attributes that appear in the provided resource inventory.
+- Only propose `instance_type` values that appear in the provided catalog. Never invent an instance type.
+- If you have no real data to cite, do not fabricate a citation to force out a recommendation: return an empty `citations` list.
+- Do not invent resources, attribute names, or data that were not given to you.
+- Output must match the provided JSON schema exactly. No prose outside it.
+
+
+
+## Terraform source
+
+### file: main.tf
+```
+ 1| resource "libvirt_domain" "vm" {
+ 2|   name   = "correctexam-exp"
+ 3|   memory = 4096
+ 4|   vcpu   = 2
+ 5| 
+ 6|   cpu {
+ 7|     mode = "host-passthrough"
+ 8|   }
+ 9| 
+10|   disk {
+11|     volume_id = libvirt_volume.vm_disk.id
+12|   }
+13| 
+14|   network_interface {
+15|     network_name   = "default"
+16|     wait_for_lease = true
+17|   }
+18| }
+```
+
+## Structured resource inventory
+
+```json
+[
+  {
+    "type": "libvirt_domain",
+    "name": "vm",
+    "address": "libvirt_domain.vm",
+    "provider": "libvirt",
+    "attributes": {
+      "name": {
+        "name": "name",
+        "raw_value": "\"correctexam-exp\"",
+        "is_literal": true,
+        "name_range": {
+          "start_line": 1,
+          "start_char": 2,
+          "end_line": 1,
+          "end_char": 6
+        },
+        "value_range": {
+          "start_line": 1,
+          "start_char": 11,
+          "end_line": 1,
+          "end_char": 28
+        }
+      },
+      "memory": {
+        "name": "memory",
+        "raw_value": "4096",
+        "is_literal": true,
+        "name_range": {
+          "start_line": 2,
+          "start_char": 2,
+          "end_line": 2,
+          "end_char": 8
+        },
+        "value_range": {
+          "start_line": 2,
+          "start_char": 11,
+          "end_line": 2,
+          "end_char": 15
+        }
+      },
+      "vcpu": {
+        "name": "vcpu",
+        "raw_value": "2",
+        "is_literal": true,
+        "name_range": {
+          "start_line": 3,
+          "start_char": 2,
+          "end_line": 3,
+          "end_char": 6
+        },
+        "value_range": {
+          "start_line": 3,
+          "start_char": 11,
+          "end_line": 3,
+          "end_char": 12
+        }
+      }
+    },
+    "block_range": {
+      "start_line": 0,
+      "start_char": 0,
+      "end_line": 17,
+      "end_char": 1
+    },
+    "file": "main.tf"
+  }
+]
+```
+## Contract (user's stated intent -- not a data source, not citable)
+
+# Change objective
+
+The application is facing increased latency problem. Solve the issue without over-provisioning the deployed resources:
+- Primary goal: Suggest the IaC changes to reduce the application’s latency.
+- The latency increases under peak load (starting from 500 users), solve it while staying resource efficient, and don’t over-provision the infrastructure in order not to have any wasted resources.
+## Provider vocabulary (the closed set of values you may propose)
+
+### libvirt_domain (libvirt)
+
+- `vcpu`: integer (unit=cores, min=1)
+- `memory`: integer (unit=MiB, min=256)
+
+
+## Required output format
+
+Return a single JSON object matching exactly this JSON Schema. No prose outside the JSON.
+
+{
+  "$defs": {
+    "Citation": {
+      "properties": {
+        "row": {
+          "title": "Row",
+          "type": "integer"
+        },
+        "column": {
+          "title": "Column",
+          "type": "string"
+        },
+        "value": {
+          "title": "Value",
+          "type": "string"
+        }
+      },
+      "required": [
+        "row",
+        "column",
+        "value"
+      ],
+      "title": "Citation",
+      "type": "object"
+    },
+    "Recommendation": {
+      "properties": {
+        "resource_address": {
+          "title": "Resource Address",
+          "type": "string"
+        },
+        "file": {
+          "title": "File",
+          "type": "string"
+        },
+        "attribute": {
+          "title": "Attribute",
+          "type": "string"
+        },
+        "current_value": {
+          "title": "Current Value",
+          "type": "string"
+        },
+        "recommended_value": {
+          "title": "Recommended Value",
+          "type": "string"
+        },
+        "action": {
+          "enum": [
+            "increase",
+            "decrease",
+            "change",
+            "no_change"
+          ],
+          "title": "Action",
+          "type": "string"
+        },
+        "confidence": {
+          "enum": [
+            "low",
+            "medium",
+            "high"
+          ],
+          "title": "Confidence",
+          "type": "string"
+        },
+        "rationale": {
+          "title": "Rationale",
+          "type": "string"
+        },
+        "citations": {
+          "items": {
+            "$ref": "#/$defs/Citation"
+          },
+          "minItems": 1,
+          "title": "Citations",
+          "type": "array"
+        }
+      },
+      "required": [
+        "resource_address",
+        "file",
+        "attribute",
+        "current_value",
+        "recommended_value",
+        "action",
+        "confidence",
+        "rationale",
+        "citations"
+      ],
+      "title": "Recommendation",
+      "type": "object"
+    }
+  },
+  "properties": {
+    "recommendations": {
+      "items": {
+        "$ref": "#/$defs/Recommendation"
+      },
+      "title": "Recommendations",
+      "type": "array"
+    },
+    "overall_assessment": {
+      "title": "Overall Assessment",
+      "type": "string"
+    }
+  },
+  "required": [
+    "recommendations",
+    "overall_assessment"
+  ],
+  "title": "AdvisorResult",
+  "type": "object"
+}
