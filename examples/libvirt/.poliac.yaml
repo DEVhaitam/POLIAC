@@ -1,0 +1,8 @@
+metrics:
+  path: ./analysis.csv
+contract:
+  path: ./contract.md
+llm:
+  provider: gemini
+  model: gemini-3.6-flash
+  temperature: 0
