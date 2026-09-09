@@ -1,0 +1,57 @@
+{
+  "name": "poliac-vscode",
+  "displayName": "poliac",
+  "description": "LLM-driven Terraform recommendations grounded in production metrics, delivered over LSP.",
+  "version": "0.0.1",
+  "private": true,
+  "publisher": "poliac",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Linters",
+    "Other"
+  ],
+  "activationEvents": [
+    "onLanguage:terraform"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "poliac.analyseCurrentFile",
+        "title": "poliac: Analyse Current File"
+      },
+      {
+        "command": "poliac.pickMetricsFile",
+        "title": "poliac: Set Metrics CSV File"
+      },
+      {
+        "command": "poliac.pickContractFile",
+        "title": "poliac: Set Contract File"
+      }
+    ],
+    "configuration": {
+      "title": "poliac",
+      "properties": {
+        "poliac.serverCommand": {
+          "type": "string",
+          "default": "poliac",
+          "description": "Command used to launch the poliac LSP server. Must be on PATH (or an absolute path) and support --stdio."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./"
+  },
+  "dependencies": {
+    "vscode-languageclient": "^9.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "@types/vscode": "^1.85.0",
+    "typescript": "^5.4.0"
+  }
+}
