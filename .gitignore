@@ -5,3 +5,8 @@ __pycache__/
 .env
 .poliac/
 results/
+
+# client-vscode
+client-vscode/node_modules/
+client-vscode/out/
+client-vscode/*.vsix
