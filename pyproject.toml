@@ -21,6 +21,7 @@ gemini = ["google-genai>=1.0"]
 anthropic = ["anthropic>=0.40"]
 openai = ["openai>=1.40"]
 deepseek = ["openai>=1.40"]  # DeepSeek's API is OpenAI-compatible, same SDK
+scraper = ["requests>=2.31", "beautifulsoup4>=4.12"]  # scripts/scrape_*.py -- not needed to run poliac itself
 
 [build-system]
 requires = ["setuptools>=68", "wheel"]
