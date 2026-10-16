@@ -1,0 +1,7 @@
+period,mau,compute_cpu_pct_mean,compute_cpu_pct_max,compute_cpu_pct_p95,storage_uploads_iops_mean,storage_uploads_iops_max,storage_uploads_throughput_mbps_max,database_aurora_connections_mean,database_aurora_connections_max,database_aurora_cpu_pct_max,cache_sessions_evictions_per_min,cache_sessions_cpu_credit_balance_min,warehouse_redshift_disk_pct_max,warehouse_redshift_queue_wait_s_p95,search_opensearch_p95_latency_ms,search_opensearch_jvm_heap_pct_max,ratelimit_memorydb_throughput_gbps_max,backup_restore_requests_per_month,backup_restore_latency_hours_mean,fsx_reports_throughput_pct_max
+month_1,5000,22,38,30,300,500,40,20,35,25,0,144,30,0.4,45,40,0.15,2,3.5,35
+month_2,10000,35,52,44,600,900,70,45,70,40,0,120,42,0.8,60,52,0.28,3,3.6,48
+month_3,18000,48,68,58,1100,1600,110,80,120,58,5,80,58,1.6,85,65,0.42,8,3.4,62
+month_4,28000,62,83,74,1800,2400,160,130,190,74,40,30,74,3.2,140,78,0.58,22,3.8,78
+month_5,36000,74,94,88,2500,2950,210,180,260,88,180,5,89,6.5,230,89,0.70,55,3.6,91
+month_6,42000,86,98,96,2950,3000,248,220,310,96,520,0,97,11.2,410,95,0.74,140,3.7,99
