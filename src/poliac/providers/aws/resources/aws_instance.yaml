@@ -1,0 +1,6 @@
+attributes:
+  instance_type: {type: enum, catalog: aws_instances.csv, key: instance_type}
+  root_block_device.volume_size: {type: integer, unit: GiB, min: 8}
+  root_block_device.volume_type: {type: enum, catalog: ebs_volume_types.csv, key: volume_type}
+  root_block_device.iops: {type: integer, unit: IOPS, min: 100}
+  root_block_device.throughput: {type: integer, unit: MBps, min: 125}

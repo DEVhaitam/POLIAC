@@ -1,0 +1,2 @@
+attributes:
+  node_type: {type: enum, catalog: memorydb_node_types.csv, key: instance_type}

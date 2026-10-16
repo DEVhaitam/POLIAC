@@ -1,0 +1,5 @@
+attributes: {}
+combos:
+  - attributes: [cpu, memory]
+    catalog: ecs_fargate_sizes.csv
+    keys: [cpu_units, memory_mib]

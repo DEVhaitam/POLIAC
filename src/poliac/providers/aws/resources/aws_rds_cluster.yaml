@@ -1,0 +1,7 @@
+attributes:
+  serverlessv2_scaling_configuration.max_capacity:
+    type: number
+    unit: ACU
+    min: 0.5
+    max: 256
+    step: 0.5

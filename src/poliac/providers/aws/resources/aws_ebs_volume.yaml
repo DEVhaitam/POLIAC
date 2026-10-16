@@ -1,0 +1,5 @@
+attributes:
+  type: {type: enum, catalog: ebs_volume_types.csv, key: volume_type}
+  size: {type: integer, unit: GiB, min: 1}
+  iops: {type: integer, unit: IOPS, min: 100}
+  throughput: {type: integer, unit: MBps, min: 125}

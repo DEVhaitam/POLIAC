@@ -1,0 +1,2 @@
+attributes:
+  instance_class: {type: enum, catalog: rds_instance_classes.csv, key: instance_class}

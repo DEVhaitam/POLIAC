@@ -1,0 +1,2 @@
+attributes:
+  storage_class: {type: enum, catalog: s3_storage_classes.csv, key: storage_class}

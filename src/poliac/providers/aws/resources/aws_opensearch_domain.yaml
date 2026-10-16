@@ -1,0 +1,2 @@
+attributes:
+  cluster_config.instance_type: {type: enum, catalog: opensearch_instance_types.csv, key: instance_type}

@@ -1,0 +1,2 @@
+attributes:
+  node_type: {type: enum, catalog: redshift_node_types.csv, key: node_type}

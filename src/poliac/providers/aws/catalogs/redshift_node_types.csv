@@ -1,0 +1,11 @@
+node_type,vcpu,memory_gib,storage_per_node,node_range,total_capacity
+dc2.8xlarge,32,244,2.56 TB NVMe-SSD,2–128,326 TB
+dc2.large,2,15,160 GB NVMe-SSD,1–32,5.12 TB
+ra3.16xlarge,48,384,128 TB,2–128,"16,384 TB"
+ra3.4xlarge,12,96,128 TB,2–32,8192 TB
+ra3.large,2,16,8 TB,2-16,128 TB
+ra3.xlplus,4,32,32 TB,2–16,1024 TB
+rg.12xlarge,48,384,128 TB,2–128,"16,384 TB"
+rg.4xlarge,16,128,128 TB,2–32,8192 TB
+rg.large,2,16,8 TB,2–16,128 TB
+rg.xlarge,4,32,32 TB,2–16,1024 TB

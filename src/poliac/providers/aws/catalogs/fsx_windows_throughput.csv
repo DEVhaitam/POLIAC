@@ -1,0 +1,12 @@
+throughput_capacity_mbps,network_baseline_mbps,network_burst_mbps,network_iops,memory_gb
+32,32,600,Thousands,4
+64,64,600,Tens of thousands,8
+128,150,1250,Tens of thousands,8
+256,300,1250,Hundreds of thousands,16
+512,600,1250,Hundreds of thousands,32
+1024,1500,,Hundreds of thousands,64
+2048,3125,,Hundreds of thousands,128
+4608,9375,,Millions,192
+6144,12500,,Millions,256
+9216,18750,,Millions,384
+12288,21250,,Millions,512

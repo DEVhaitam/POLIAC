@@ -5,6 +5,8 @@ import json
 import sys
 from pathlib import Path
 
+from dotenv import load_dotenv
+
 from poliac import __version__
 
 
@@ -171,7 +173,8 @@ def _cmd_analyse(args: argparse.Namespace) -> int:
 
     outcome = validate(result.recommendations, resources, metrics, provider_vocab)
 
-    # SPEC §6.2: on any V1-V7 failure, retry once with the specific errors appended.
+    # SPEC §6.2: on any validation failure (V1-V7, or V9's cross-recommendation combo check),
+    # retry once with the specific errors appended.
     if outcome.rejected and config.llm.max_retries > 0:
         errors_text = format_errors_for_retry(outcome.rejected)
         try:
@@ -204,6 +207,13 @@ def _cmd_analyse(args: argparse.Namespace) -> int:
 
 
 def main(argv: list[str] | None = None) -> int:
+    # Loaded here, not at import time: covers both CLI subcommands and `--stdio` (the LSP
+    # server), and works regardless of the process's cwd -- python-dotenv walks up from this
+    # file's own location (the editable-installed source tree) to find `.env`, independent of
+    # whatever cwd the process was spawned with (e.g. a VS Code extension host has no reason to
+    # share the shell env where a `.env` might otherwise be sourced manually).
+    load_dotenv()
+
     parser = build_parser()
     args = parser.parse_args(argv)
 

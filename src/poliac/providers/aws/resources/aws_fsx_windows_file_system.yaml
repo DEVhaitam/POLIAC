@@ -1,0 +1,2 @@
+attributes:
+  throughput_capacity: {type: enum, catalog: fsx_windows_throughput.csv, key: throughput_capacity_mbps}
