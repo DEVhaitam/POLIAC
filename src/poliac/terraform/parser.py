@@ -3,10 +3,13 @@
 python-hcl2 discards positions and is deliberately not used here -- ranges are what make the
 LSP diagnostics and the validator's V3 check (`current_value` matches the real source) possible.
 
-Only top-level `resource "type" "name" { ... }` blocks are extracted, and only the attributes
-declared directly in the resource body -- not inside nested blocks (`cpu { }`, `disk { }`, ...).
-Nothing in scope (libvirt_domain vcpu/memory, aws_instance instance_type) lives inside
-a nested block, so this keeps the parser simple without losing anything we need.
+Only top-level `resource "type" "name" { ... }` blocks are extracted. Within a resource body,
+attributes are flattened recursively: an unlabeled nested block (`root_block_device { ... }`,
+`cpu { ... }`) contributes its own attributes under a dotted prefix (`root_block_device.
+volume_size`), matching how they're addressed in the provider vocab (`providers/*.yaml`).
+*Labeled* nested blocks (`provisioner "local-exec" { ... }`) are skipped -- their labels make
+them repeatable/instance-like rather than a single addressable sub-object, and nothing in scope
+needs them.
 """
 
 from __future__ import annotations
@@ -62,6 +65,26 @@ def _parse_attribute(source: bytes, attr_node: Node) -> tuple[str, Attribute] | 
     )
 
 
+def _parse_body(source: bytes, body_node: Node, prefix: str = "") -> dict[str, Attribute]:
+    attributes: dict[str, Attribute] = {}
+    for child in body_node.children:
+        if child.type == "attribute":
+            parsed = _parse_attribute(source, child)
+            if parsed is not None:
+                name, attr = parsed
+                attributes[f"{prefix}{name}"] = attr
+        elif child.type == "block":
+            if any(c.type == "string_lit" for c in child.children):
+                continue  # labeled block (provisioner "local-exec" {...}) -- see module docstring
+            name_node = next((c for c in child.children if c.type == "identifier"), None)
+            nested_body = next((c for c in child.children if c.type == "body"), None)
+            if name_node is None or nested_body is None:
+                continue
+            block_name = _text(source, name_node)
+            attributes.update(_parse_body(source, nested_body, prefix=f"{prefix}{block_name}."))
+    return attributes
+
+
 def _parse_resource_block(source: bytes, block_node: Node, file: str) -> Resource | None:
     string_lits = [c for c in block_node.children if c.type == "string_lit"]
     if len(string_lits) < 2:
@@ -72,14 +95,7 @@ def _parse_resource_block(source: bytes, block_node: Node, file: str) -> Resourc
     provider = resource_type.split("_", 1)[0]
 
     body_node = next((c for c in block_node.children if c.type == "body"), None)
-    attributes: dict[str, Attribute] = {}
-    if body_node is not None:
-        for child in body_node.children:
-            if child.type != "attribute":
-                continue  # skip nested blocks (cpu {}, disk {}, ...) -- see module docstring
-            parsed = _parse_attribute(source, child)
-            if parsed is not None:
-                attributes[parsed[0]] = parsed[1]
+    attributes = _parse_body(source, body_node) if body_node is not None else {}
 
     return Resource(
         type=resource_type,
