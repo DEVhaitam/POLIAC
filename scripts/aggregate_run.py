@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
-Turn one results/<config>/<run_id>/ folder (raw Locust + system-sampler CSVs,
-one set per user-count step) into a single aggregated CSV: one row per step,
-columns grouped by resource dimension (compute / network / storage / database
-/ functions).
+Turn one <config>/<run_id>/ folder (raw Locust + system-sampler CSVs, one set
+per user-count step -- e.g. under `ops data/` or `results/`) into a single
+aggregated CSV: one row per step, columns grouped by resource dimension
+(compute / network / storage / database / functions).
 
 This is data prep for building example fixtures for poliac. It is NOT part of
 poliac's runtime pipeline: it only computes plain descriptive statistics
@@ -11,8 +11,8 @@ poliac's runtime pipeline: it only computes plain descriptive statistics
 judgement about what those numbers mean -- that stays the LLM's job.
 
 Usage:
-    python3 scripts/aggregate_run.py results/2cpu-4gb/20260706_011803 \
-        --out examples/libvirt/analysis.csv
+    python3 scripts/aggregate_run.py "ops data/2cpu-4gb/20260706_011803" \
+        --out examples/libvirt/2cpu-4gb/analysis.csv
 """
 
 from __future__ import annotations
