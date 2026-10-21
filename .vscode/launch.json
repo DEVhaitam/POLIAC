@@ -1,0 +1,16 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Run poliac extension (libvirt 2cpu-4gb example)",
+      "type": "extensionHost",
+      "request": "launch",
+      "args": [
+        "--extensionDevelopmentPath=${workspaceFolder}/client-vscode",
+        "${workspaceFolder}/examples/libvirt/2cpu-4gb"
+      ],
+      "outFiles": ["${workspaceFolder}/client-vscode/out/**/*.js"],
+      "preLaunchTask": "${defaultBuildTask}"
+    }
+  ]
+}

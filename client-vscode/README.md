@@ -38,7 +38,7 @@ Open the **`poliac` repo root** (not this folder alone) in VS Code and press **F
 debug config lives at `<repo root>/.vscode/launch.json` (not here), because VS Code only
 auto-discovers `.vscode/launch.json` relative to whatever folder is actually open as the
 workspace root. It builds the extension and opens an Extension Development Host with
-`examples/libvirt` (which already ships a `.poliac.yaml`, `main.tf`, `analysis.csv`, and
+`examples/libvirt/2cpu-4gb` (which already ships a `.poliac.yaml`, `main.tf`, `analysis.csv`, and
 `specification.md`) as its workspace, so you can run `poliac: Analyse Current File` on
 `main.tf` immediately.
 

@@ -20,9 +20,10 @@ specification.md    (your stated intent)         ┘                            
   file, not a code change.
 - **LLM providers**: Gemini, Claude (Anthropic), ChatGPT (OpenAI), and DeepSeek — pick per run,
   no code changes.
-- **Interfaces**: a CLI (`poliac inspect`, `poliac analyse`) and an LSP server (`poliac --stdio`)
-  with diagnostics, hover, quick-fix, and code lens. No packaged editor extension yet — any
-  LSP-capable client configured to launch `poliac --stdio` works.
+- **Interfaces**: a CLI (`poliac inspect`, `poliac analyse`), an LSP server (`poliac --stdio`)
+  with diagnostics, hover, quick-fix, and code lens, and a minimal VS Code extension
+  (`client-vscode/`, see `USAGE.md` §5.3). Any other LSP-capable client configured to launch
+  `poliac --stdio` works too — `USAGE.md` §5.4 covers attaching from Neovim.
 
 ## Install
 
@@ -41,12 +42,12 @@ export GEMINI_API_KEY=...        # or ANTHROPIC_API_KEY / OPENAI_API_KEY / DEEPS
 ## Quickstart
 
 ```bash
-poliac inspect examples/libvirt/main.tf --metrics-csv examples/libvirt/analysis.csv
+poliac inspect examples/libvirt/2cpu-4gb/main.tf --metrics-csv examples/libvirt/2cpu-4gb/analysis.csv
 ```
 Parses your Terraform and metrics, prints the resource inventory. Free — no LLM call.
 
 ```bash
-cd examples/libvirt
+cd examples/libvirt/2cpu-4gb
 poliac analyse main.tf --dry-run     # see the exact prompt that would be sent, still free
 poliac analyse main.tf               # the real thing
 ```
@@ -54,13 +55,16 @@ Prints validated recommendations as JSON, each with a rationale and the exact me
 cites, plus an overall assessment. Anything the model claimed that didn't check out against your
 actual files is silently dropped from the output and logged to `.poliac/rejected.jsonl` instead.
 
+`examples/libvirt/` ships two configs of the same real deployment — `2cpu-4gb/` (CPU-saturated,
+latency-bound) and `8cpu-4gb/` (over-provisioned) — see [ARCHITECTURE.md §4](ARCHITECTURE.md).
+
 Every setting above can be overridden per-run instead of coming from `.poliac.yaml` — useful for
 trying a different contract, metrics snapshot, or LLM without touching the config file:
 
 ```bash
 poliac analyse main.tf \
-  --metrics-csv examples/libvirt/analysis.csv \
-  --contract examples/libvirt/specification-cost-cutting.md \
+  --metrics-csv examples/libvirt/2cpu-4gb/analysis.csv \
+  --contract examples/libvirt/2cpu-4gb/specification.md \
   --llm-provider anthropic --llm-model claude-opus-5
 ```
 

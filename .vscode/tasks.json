@@ -1,0 +1,13 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "type": "npm",
+      "script": "compile",
+      "path": "client-vscode",
+      "problemMatcher": "$tsc",
+      "presentation": { "reveal": "silent" },
+      "group": { "kind": "build", "isDefault": true }
+    }
+  ]
+}
