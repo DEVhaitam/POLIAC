@@ -1,0 +1,27 @@
+{
+  "recommendations": [
+    {
+      "resource_address": "aws_instance.vm",
+      "file": "main.tf",
+      "attribute": "instance_type",
+      "current_value": "t3.medium",
+      "recommended_value": "t3.small",
+      "action": "decrease",
+      "confidence": "medium",
+      "rationale": "The contract's primary goal is to reduce compute cost. The current t3.medium (2 vCPU, 4 GiB) can be downsized to t3.small (2 vCPU, 2 GiB) from the allowed catalog, which cuts cost roughly in half. The contract states the deployment does not serve peak concurrency as normal operating condition and only needs to support everyday load of 100–200 users. Without runtime metrics, we assume the smaller instance can sustain that steady-state load. The latency concern under peak load is noted, but the contract explicitly says peak is not the normal condition and cost reduction is the priority.",
+      "citations": []
+    },
+    {
+      "resource_address": "aws_instance.vm",
+      "file": "main.tf",
+      "attribute": "root_block_device.volume_size",
+      "current_value": "20",
+      "recommended_value": "20",
+      "action": "no_change",
+      "confidence": "medium",
+      "rationale": "The contract does not mention storage cost or capacity concerns, and 20 GiB is already close to the minimum allowed (8 GiB). Reducing it further risks running out of space for OS and application files without a clear cost-saving justification. Keeping the volume size unchanged avoids introducing stability risks.",
+      "citations": []
+    }
+  ],
+  "overall_assessment": "To meet the cost-cutting objective, downsize the instance from t3.medium to t3.small. This aligns with the contract's directive to reduce compute spend while maintaining capacity for everyday load (100–200 users), as peak-level concurrency is not the normal operating condition. The latency concern under peak load is acknowledged but not addressed due to cost priority and lack of runtime data. No change to the root volume size is warranted based on the provided inventory and contract."
+}

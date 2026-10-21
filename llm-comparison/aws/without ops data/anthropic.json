@@ -1,0 +1,22 @@
+{
+  "recommendations": [
+    {
+      "resource_address": "aws_instance.vm",
+      "file": "main.tf",
+      "attribute": "instance_type",
+      "current_value": "t3.medium",
+      "recommended_value": "t3.medium",
+      "action": "no_change",
+      "confidence": "low",
+      "rationale": "The contract's primary goal is cost reduction, and downsizing within the t3 family (e.g. to t3.small) would lower spend while retaining burstable CPU credit behavior appropriate for a workload whose peak concurrency is explicitly not the normal operating condition. However, no production or runtime metrics (CPU utilization, memory, credit balance, request latency at the stated everyday load of 100/200 users) were provided. The contract also sets a hard constraint: capacity must not be cut below what is needed for stability at everyday load. Without utilization data for the current t3.medium instance, there is no basis to determine whether a smaller instance type would still satisfy that constraint, and recommending a downsize on reasoning alone risks violating it. The safer action given only the Terraform source and contract is to leave instance_type unchanged until baseline utilization data is available, at which point a right-sizing decision (likely a downsize, given the stated budget pressure and non-peak normal load) could be made with real support.",
+      "citations": [
+        {
+          "row": 11,
+          "column": "instance_type",
+          "value": "\"t3.medium\""
+        }
+      ]
+    }
+  ],
+  "overall_assessment": "The Terraform source declares a single aws_instance (t3.medium, 20GiB root volume) with no autoscaling or load-balancing resources present, and the provided resource inventory only exposes ami, instance_type, and tags as recommendable attributes (root_block_device.volume_size is referenced in the provider vocabulary but does not appear in the resource inventory's attributes, so it is out of scope for recommendations here). The contract asks to cut compute cost while not compromising stability at everyday load (100/200 users), and notes that peak-load latency is a secondary concern since peak is not the normal operating condition -- this framing is consistent with staying on a burstable t3 instance type and potentially sizing down within that family. However, no production or runtime metrics were supplied, so no data exists to confirm that a smaller instance type would still meet the everyday-load stability requirement. Rather than force a downsize recommendation without support, or fabricate a citation to justify one, this assessment recommends no change to instance_type and flags that a right-sizing recommendation should be revisited once CPU/memory utilization and latency data at the 100/200-user load are available."
+}

@@ -1,0 +1,236 @@
+You are advising on changes to the given Terraform, in light of the user's stated contract.
+
+- The contract is the user's stated intent.
+- Only recommend changes to attributes that appear in the provided resource inventory.
+- Only propose `instance_type` values that appear in the provided catalog. Never invent an instance type.
+- If you have no real data to cite, do not fabricate a citation to force out a recommendation: return an empty `citations` list.
+- Do not invent resources, attribute names, or data that were not given to you.
+- Output must match the provided JSON schema exactly. No prose outside it.
+
+## Terraform source
+
+### file: main.tf
+```
+1| resource "aws_instance" "vm" {
+2|   ami           = "ami-0000000000000000f" # placeholder -- not a real, resolvable AMI
+3|   instance_type = "t3.medium"
+4| 
+5|   root_block_device {
+6|     volume_size = 20
+7|   }
+8| 
+9|   tags = {
+10|     Name = "correctexam-exp"
+11|   }
+12| }
+```
+
+## Structured resource inventory
+
+```json
+[
+  {
+    "type": "aws_instance",
+    "name": "vm",
+    "address": "aws_instance.vm",
+    "provider": "aws",
+    "attributes": {
+      "ami": {
+        "name": "ami",
+        "raw_value": "\"ami-0000000000000000f\"",
+        "is_literal": true,
+        "name_range": {
+          "start_line": 10,
+          "start_char": 2,
+          "end_line": 10,
+          "end_char": 5
+        },
+        "value_range": {
+          "start_line": 10,
+          "start_char": 18,
+          "end_line": 10,
+          "end_char": 41
+        }
+      },
+      "instance_type": {
+        "name": "instance_type",
+        "raw_value": "\"t3.medium\"",
+        "is_literal": true,
+        "name_range": {
+          "start_line": 11,
+          "start_char": 2,
+          "end_line": 11,
+          "end_char": 15
+        },
+        "value_range": {
+          "start_line": 11,
+          "start_char": 18,
+          "end_line": 11,
+          "end_char": 29
+        }
+      },
+      "tags": {
+        "name": "tags",
+        "raw_value": "{\n    Name = \"correctexam-exp\"\n  }",
+        "is_literal": false,
+        "name_range": {
+          "start_line": 17,
+          "start_char": 2,
+          "end_line": 17,
+          "end_char": 6
+        },
+        "value_range": {
+          "start_line": 17,
+          "start_char": 9,
+          "end_line": 19,
+          "end_char": 3
+        }
+      }
+    },
+    "block_range": {
+      "start_line": 9,
+      "start_char": 0,
+      "end_line": 20,
+      "end_char": 1
+    },
+    "file": "main.tf"
+  }
+]
+```
+
+## Contract (user's stated intent -- not a data source, not citable)
+
+# Change objective
+
+We are over budget this quarter. Cut infrastructure spend on this deployment.
+
+- Primary goal: reduce compute cost for this VM.
+- There's latency increase under peak load, how to solve it while staying at low budget. However, this deployment is not expected to serve peak-level concurrency as its normal operating condition.
+- Do not cut capacity below what's needed to keep the system stable at everyday load (100/200 users).
+
+## Provider vocabulary (the closed set of values you may propose)
+
+### aws_instance (aws)
+
+- `instance_type`: enum, allowed values: ['c5.12xlarge', 'c5.18xlarge', 'c5.24xlarge', 'c5.2xlarge', 'c5.4xlarge', 'c5.9xlarge', 'c5.large', 'c5.xlarge', 'm5.12xlarge', 'm5.16xlarge', 'm5.24xlarge', 'm5.2xlarge', 'm5.4xlarge', 'm5.8xlarge', 'm5.large', 'm5.xlarge', 'r5.12xlarge', 'r5.16xlarge', 'r5.24xlarge', 'r5.2xlarge', 'r5.4xlarge', 'r5.8xlarge', 'r5.large', 'r5.xlarge', 't3.2xlarge', 't3.large', 't3.medium', 't3.micro', 't3.nano', 't3.small', 't3.xlarge']
+- `root_block_device.volume_size`: integer (unit=GiB, min=8)
+
+
+## Required output format
+
+Return a single JSON object matching exactly this JSON Schema. No prose outside the JSON.
+
+{
+  "$defs": {
+    "Citation": {
+      "properties": {
+        "row": {
+          "title": "Row",
+          "type": "integer"
+        },
+        "column": {
+          "title": "Column",
+          "type": "string"
+        },
+        "value": {
+          "title": "Value",
+          "type": "string"
+        }
+      },
+      "required": [
+        "row",
+        "column",
+        "value"
+      ],
+      "title": "Citation",
+      "type": "object"
+    },
+    "Recommendation": {
+      "properties": {
+        "resource_address": {
+          "title": "Resource Address",
+          "type": "string"
+        },
+        "file": {
+          "title": "File",
+          "type": "string"
+        },
+        "attribute": {
+          "title": "Attribute",
+          "type": "string"
+        },
+        "current_value": {
+          "title": "Current Value",
+          "type": "string"
+        },
+        "recommended_value": {
+          "title": "Recommended Value",
+          "type": "string"
+        },
+        "action": {
+          "enum": [
+            "increase",
+            "decrease",
+            "change",
+            "no_change"
+          ],
+          "title": "Action",
+          "type": "string"
+        },
+        "confidence": {
+          "enum": [
+            "low",
+            "medium",
+            "high"
+          ],
+          "title": "Confidence",
+          "type": "string"
+        },
+        "rationale": {
+          "title": "Rationale",
+          "type": "string"
+        },
+        "citations": {
+          "items": {
+            "$ref": "#/$defs/Citation"
+          },
+          "minItems": 1,
+          "title": "Citations",
+          "type": "array"
+        }
+      },
+      "required": [
+        "resource_address",
+        "file",
+        "attribute",
+        "current_value",
+        "recommended_value",
+        "action",
+        "confidence",
+        "rationale",
+        "citations"
+      ],
+      "title": "Recommendation",
+      "type": "object"
+    }
+  },
+  "properties": {
+    "recommendations": {
+      "items": {
+        "$ref": "#/$defs/Recommendation"
+      },
+      "title": "Recommendations",
+      "type": "array"
+    },
+    "overall_assessment": {
+      "title": "Overall Assessment",
+      "type": "string"
+    }
+  },
+  "required": [
+    "recommendations",
+    "overall_assessment"
+  ],
+  "title": "AdvisorResult",
+  "type": "object"
+}

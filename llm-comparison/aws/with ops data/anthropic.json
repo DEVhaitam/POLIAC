@@ -1,0 +1,25 @@
+{
+  "recommendations": [
+    {
+      "resource_address": "aws_instance.vm",
+      "file": "main.tf",
+      "attribute": "instance_type",
+      "current_value": "t3.medium",
+      "recommended_value": "t3.small",
+      "action": "decrease",
+      "confidence": "medium",
+      "rationale": "At everyday load (100 and 200 users, the levels the contract says must remain stable), CPU utilization on the current t3.medium is low (32.4% mean / 43.7% max at 100 users; 50.7% mean / 69.0% max at 200 users), and t3.small carries the same 2 vCPU count as t3.medium, so CPU headroom is preserved. The binding constraint is RAM: measured usage at 100-200 users (~1.665-1.678 GB) sits far below t3.medium's 4 GiB but would consume roughly 78-83% of t3.small's 2 GiB, versus ~40-42% today. Mean and max RAM values are close together at both load points, indicating usage is fairly stable rather than spiky, which supports the downsize -- but this is a real reduction in safety margin, not a free cost cut. Flagging explicitly per the conflict-disclosure requirement: the contract asks to cut cost without cutting capacity needed for stability at 100/200 users, and this change does reduce compute cost, but it also narrows RAM headroom from >55% to under ~22% at 200 users, so it trades away some of the stability margin the contract asked to preserve. If a stricter reading of 'do not cut below what's needed for stability' is preferred, keep t3.medium and only pursue non-compute cost levers.",
+      "citations": [
+        {"row": 3, "column": "compute_cpu_pct_mean", "value": "32.428"},
+        {"row": 3, "column": "compute_cpu_pct_max", "value": "43.722"},
+        {"row": 3, "column": "compute_ram_used_bytes_mean", "value": "1665296334.049"},
+        {"row": 3, "column": "compute_ram_used_bytes_max", "value": "1674113024.0"},
+        {"row": 4, "column": "compute_cpu_pct_mean", "value": "50.662"},
+        {"row": 4, "column": "compute_cpu_pct_max", "value": "69.011"},
+        {"row": 4, "column": "compute_ram_used_bytes_mean", "value": "1666931637.073"},
+        {"row": 4, "column": "compute_ram_used_bytes_max", "value": "1677516800.0"}
+      ]
+    }
+  ],
+  "overall_assessment": "This VM is meaningfully over-provisioned relative to its stated everyday operating condition (100/200 users): CPU sits at 32-69% and RAM at ~1.67 of 4 GiB, i.e. well under half of capacity on both dimensions. That supports the contract's cost-reduction goal, and I've recommended moving from t3.medium to t3.small, the next-smaller instance type in the allowed vocabulary with matching vCPU count. I'm surfacing an explicit tension rather than resolving it silently: this downsize preserves CPU headroom but leaves materially less RAM headroom (~78-83% utilized at 100-200 users on t3.small vs ~40-42% today), which is a real, if data-supported, reduction in the stability margin the contract also asked to protect -- so this is a defensible trade rather than a strictly safe no-cost-tradeoff change. On the latency question: rows 5-7 (500-2000 users) show CPU saturating near 99-100% alongside p95/p99 latency exploding into the seconds (e.g. p99 climbing from 180ms at 100 users to tens of thousands of ms at 1000-2000 users), which is a genuine capacity ceiling on a single instance. However, the contract explicitly states peak-level concurrency is not the normal operating condition, and the only resource in the provided inventory is a single aws_instance -- there is no auto-scaling group, load balancer, or other horizontally-scaling resource to modify. Fixing peak latency at low budget would require an architectural change (e.g. horizontal scaling) outside the given inventory, so no recommendation is made for it here; it is called out for visibility rather than acted on, per the constraint to only recommend changes to attributes actually present in the resource inventory. No change is recommended for root_block_device.volume_size or tags: the metrics contain no disk-capacity-usage figures (only throughput, in storage_disk_read_bps / storage_disk_write_bps) that would support resizing storage, so any volume_size change would be unsupported by the data."
+}

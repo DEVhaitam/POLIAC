@@ -1,0 +1,37 @@
+{
+  "recommendations": [
+    {
+      "resource_address": "aws_instance.vm",
+      "file": "main.tf",
+      "attribute": "instance_type",
+      "current_value": "\"t3.medium\"",
+      "recommended_value": "\"t3.small\"",
+      "action": "change",
+      "confidence": "medium",
+      "rationale": "The contract's primary goal is to reduce compute cost. At everyday load (100-200 users), CPU utilization is moderate. At 100 users, mean CPU is 32.428% (row 3, compute_cpu_pct_mean), and at 200 users, mean CPU is 50.662% (row 4, compute_cpu_pct_mean). These values suggest that a t3.small (half the vCPUs of t3.medium) can handle the load, though with reduced headroom. However, this contradicts the contract's secondary concern about latency under peak load—if peak concurrency occurs, the smaller instance will exacerbate latency, as the system already hits 99.978% CPU max at 2000 users (row 7, compute_cpu_pct_max). The data shows p95 latency spikes at 500 users (570ms, row 5, functions_p95_latency_ms) and dramatically at 1000+ users. Since the contract states peak concurrency is not the normal operating condition, the cost savings may be acceptable, but the conflict between reducing cost and maintaining peak latency must be acknowledged.",
+      "citations": [
+        {
+          "row": 3,
+          "column": "compute_cpu_pct_mean",
+          "value": "32.428"
+        },
+        {
+          "row": 4,
+          "column": "compute_cpu_pct_mean",
+          "value": "50.662"
+        },
+        {
+          "row": 7,
+          "column": "compute_cpu_pct_max",
+          "value": "99.978"
+        },
+        {
+          "row": 5,
+          "column": "functions_p95_latency_ms",
+          "value": "570.0"
+        }
+      ]
+    }
+  ],
+  "overall_assessment": "The recommended change to t3.small reduces compute cost as requested, based on CPU headroom at everyday load (100-200 users). However, this conflicts with the desire to address peak-latency increases: the metrics show that CPU saturation and latency degradation already occur under higher loads with the current t3.medium, and downsizing will worsen this. The contract acknowledges that peak concurrency is not the normal operating condition, but the cost-saving measure still reduces the system's ability to handle spikes. No other attributes can be changed to further reduce cost without violating the stability requirement at everyday load."
+}

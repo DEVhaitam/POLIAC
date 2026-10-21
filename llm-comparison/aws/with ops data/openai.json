@@ -1,0 +1,42 @@
+{
+  "recommendations": [
+    {
+      "resource_address": "aws_instance.vm",
+      "file": "main.tf",
+      "attribute": "instance_type",
+      "current_value": "t3.medium",
+      "recommended_value": "t3.small",
+      "action": "decrease",
+      "confidence": "medium",
+      "rationale": "The stated intent is to reduce compute cost while retaining enough capacity for everyday load rather than peak concurrency. At 200 users, the current instance shows 59.2% p95 CPU and 1,677,516,800 bytes maximum RAM usage, while p95 latency is 83 ms, indicating substantial headroom at the stated everyday operating range. At 500 users, however, p95 CPU reaches 95.1% and p95 latency rises to 570 ms, so the data does not support maintaining the peak-load latency target on a downsized VM. Therefore, t3.small is a cost-reduction recommendation for the non-peak operating condition, not a claim that it will satisfy peak-load latency. The recommendation should be validated with load testing because the provided metrics were collected on t3.medium and do not directly measure t3.small capacity.",
+      "citations": [
+        {
+          "row": 4,
+          "column": "compute_cpu_pct_p95",
+          "value": "59.2"
+        },
+        {
+          "row": 4,
+          "column": "compute_ram_used_bytes_max",
+          "value": "1677516800.0"
+        },
+        {
+          "row": 4,
+          "column": "functions_p95_latency_ms",
+          "value": "83.0"
+        },
+        {
+          "row": 5,
+          "column": "compute_cpu_pct_p95",
+          "value": "95.1"
+        },
+        {
+          "row": 5,
+          "column": "functions_p95_latency_ms",
+          "value": "570.0"
+        }
+      ]
+    }
+  ],
+  "overall_assessment": "A compute-downsize is supported for the stated everyday operating condition, with t3.small being the recommended catalog value to test. The metrics show healthy headroom at 200 users (59.2% p95 CPU and 83.0 ms p95 latency) but clear saturation at higher concurrency: at 500 users, p95 CPU is 95.1% and p95 latency is 570.0 ms. Thus, the stated goal of reducing cost can be pursued because peak-level concurrency is not expected to be normal, but the latency behavior under peak load cannot simultaneously be treated as guaranteed by this change. The provided data does not directly establish t3.small's performance, so the recommendation has medium confidence and should be validated against everyday-load stability before deployment."
+}

@@ -1,0 +1,43 @@
+{
+  "recommendations": [
+    {
+      "resource_address": "aws_instance.vm",
+      "file": "main.tf",
+      "attribute": "instance_type",
+      "current_value": "t3.medium",
+      "recommended_value": "t3.small",
+      "action": "decrease",
+      "confidence": "medium",
+      "rationale": "To satisfy the user contract goal of cutting infrastructure spend while sustaining everyday load (100-200 users), downsizing from t3.medium (2 vCPU, 4 GiB) to t3.small (2 vCPU, 2 GiB) is recommended. At 100 users, CPU max is 43.722% and peak RAM usage is 1674113024.0 bytes (~1.56 GiB). At 200 users, CPU max reaches 69.011% and peak RAM usage is 1677516800.0 bytes (~1.56 GiB). Because t3.small maintains 2 vCPUs and provides 2 GiB of memory, it supports normal operating conditions at a lower cost. However, metrics show initial peak RAM reached 2028228608.0 bytes (~1.89 GiB) at 10 users, meaning memory headroom will be constrained on a 2 GiB instance under burst conditions.",
+      "citations": [
+        {
+          "row": 3,
+          "column": "compute_cpu_pct_max",
+          "value": "43.722"
+        },
+        {
+          "row": 3,
+          "column": "compute_ram_used_bytes_max",
+          "value": "1674113024.0"
+        },
+        {
+          "row": 4,
+          "column": "compute_cpu_pct_max",
+          "value": "69.011"
+        },
+        {
+          "row": 4,
+          "column": "compute_ram_used_bytes_max",
+          "value": "1677516800.0"
+        },
+        {
+          "row": 0,
+          "column": "compute_ram_used_bytes_max",
+          "value": "2028228608.0"
+        }
+      ],
+      "applicable": true
+    }
+  ],
+  "overall_assessment": "The system can be downsized from t3.medium to t3.small to meet the primary objective of reducing compute expenditure while sustaining everyday user concurrency (100-200 users). At 200 users, max CPU utilization is 69.011% and RAM usage peaks at 1677516800.0 bytes (~1.56 GiB), which fits within t3.small's 2 vCPU / 2 GiB allocation. Note that at higher loads (500+ users) CPU max reaches 99.744%, so this smaller sizing will not accommodate heavy peak traffic without latency degradation, aligned with the contract's explicit trade-off prioritizing cost reduction over peak capacity."
+}

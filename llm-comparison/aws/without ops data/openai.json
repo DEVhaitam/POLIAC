@@ -1,0 +1,17 @@
+{
+  "recommendations": [
+  {
+  "resource_address": "aws_instance.vm",
+  "file": "main.tf",
+  "attribute": "instance_type",
+  "current_value": "t3.medium",
+  "recommended_value": "t3.medium",
+  "action": "no_change",
+  "confidence": "low",
+  "rationale": "The contract requires reducing compute cost while retaining enough capacity for everyday-load stability, but no production/runtime metrics are provided to establish the workload's everyday resource requirements. Although smaller catalog values exist, recommending a smaller instance_type without evidence could violate the stability requirement. The peak-latency issue also cannot justify a larger instance because peak concurrency is not expected to be normal operating load and the available evidence does not establish that additional capacity is needed at everyday load.",
+  "citations": []
+  }
+  ],
+  "overall_assessment": "There is insufficient runtime evidence to safely recommend an instance_type change. The current t3.medium should be retained until everyday-load capacity requirements are measured; reducing it solely to meet the cost objective could compromise stability, while increasing it solely to address non-normal peak latency would conflict with the low-budget objective without evidence that peak capacity is required."
+  }
+  

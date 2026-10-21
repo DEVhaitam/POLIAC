@@ -1,0 +1,16 @@
+{
+  "recommendations": [
+    {
+      "resource_address": "aws_instance.vm",
+      "file": "main.tf",
+      "attribute": "instance_type",
+      "current_value": "t3.medium",
+      "recommended_value": "t3.small",
+      "action": "decrease",
+      "confidence": "medium",
+      "rationale": "The primary goal is to cut infrastructure spend on this deployment by reducing compute cost. Downsizing from t3.medium to t3.small reduces costs while maintaining basic compute capabilities for everyday traffic.",
+      "citations": []
+    }
+  ],
+  "overall_assessment": "To satisfy the constraint of cutting infrastructure spend on this deployment, the compute cost can be reduced by scaling down the instance_type from t3.medium to t3.small. Since no additional performance metrics or metric data tables were provided, no citations are included."
+}
